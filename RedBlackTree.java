@@ -365,17 +365,19 @@ void handleRedBlack(Node newNode)
 		//if uncle is black (or null)
 		else if((uncle == null) || !uncle.nodeColourRed)
 		{
+			Node newRoot = null;
+			
 			//if the parent is the left child of the grandparent
 			if (grandParent.left == parent){
 				//Left Right case
 				if (parent.right == newNode){
 					System.out.println("Left-Right case detected");
-					applyLeftRightCase(grandParent, parent);
+					newRoot = applyLeftRightCase(grandParent, parent);
 
 					//Left Left case
 				} else {
 					System.out.println("Left-Left case detected");
-					applyLeftLeftCase(grandParent);
+					newRoot = applyLeftLeftCase(grandParent);
 				}
 			}
 			//if the parent if the right child of the grandparent
@@ -383,15 +385,28 @@ void handleRedBlack(Node newNode)
 				//Right Left case
 				if (parent.left == newNode){
 					System.out.println("Right-Left case detected");
-					applyRightLeftCase(grandParent, parent);
+					newRoot = applyRightLeftCase(grandParent, parent);
 					
 					//Right Right case
 				} else {
 					System.out.println("Right-Right case detected");
-					applyRightRightCase(grandParent);
+					newRoot = applyRightRightCase(grandParent);
 				}
 			}
+
+			//an attempt at reconnecting the newRoot to the greatGrandParent
+			//it doesn't seem to work properly
+			Node greatGrandParent = newRoot.parent;
+			if (greatGrandParent == null) {
+				root = newRoot;
+			} else if (greatGrandParent.left == grandParent) {
+				greatGrandParent.left = newRoot;
+			} else {
+				greatGrandParent.right = newRoot;
+			}
+			return;
 		}
+	}
 	//debug info if neither case applies (maybe unneccesary?)
 	else
 	{
@@ -399,7 +414,7 @@ void handleRedBlack(Node newNode)
 	}
 }
 	
-}
+
 	//handles the Left Left case violation.
 	public Node applyLeftLeftCase(Node grandparent){
 
@@ -442,6 +457,8 @@ void handleRedBlack(Node newNode)
 		//finally handle the Right Right case
 		return applyRightRightCase(grandparent);
 	}
+
+	
 
 	/////////////////////////////////////////////////////////////////
 	/**
