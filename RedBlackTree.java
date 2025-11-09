@@ -365,19 +365,17 @@ void handleRedBlack(Node newNode)
 		//if uncle is black (or null)
 		else if((uncle == null) || !uncle.nodeColourRed)
 		{
-			Node newRoot = null;
-			
 			//if the parent is the left child of the grandparent
 			if (grandParent.left == parent){
 				//Left Right case
 				if (parent.right == newNode){
 					System.out.println("Left-Right case detected");
-					newRoot = applyLeftRightCase(grandParent, parent);
+					applyLeftRightCase(grandParent, parent);
 
 					//Left Left case
 				} else {
 					System.out.println("Left-Left case detected");
-					newRoot = applyLeftLeftCase(grandParent);
+					applyLeftLeftCase(grandParent);
 				}
 			}
 			//if the parent if the right child of the grandparent
@@ -385,16 +383,15 @@ void handleRedBlack(Node newNode)
 				//Right Left case
 				if (parent.left == newNode){
 					System.out.println("Right-Left case detected");
-					newRoot = applyRightLeftCase(grandParent, parent);
+					applyRightLeftCase(grandParent, parent);
 					
 					//Right Right case
 				} else {
 					System.out.println("Right-Right case detected");
-					newRoot = applyRightRightCase(grandParent);
+					applyRightRightCase(grandParent);
 				}
 			}
 
-			
 		}
 	}
 	//debug info if neither case applies (maybe unneccesary?)
@@ -404,7 +401,6 @@ void handleRedBlack(Node newNode)
 	}
 }
 	
-
 	//handles the Left Left case violation.
 	public Node applyLeftLeftCase(Node grandparent){
 
@@ -448,7 +444,6 @@ void handleRedBlack(Node newNode)
 		return applyRightRightCase(grandparent);
 	}
 
-	
 
 	/////////////////////////////////////////////////////////////////
 	/**
