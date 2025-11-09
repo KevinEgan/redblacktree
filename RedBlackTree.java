@@ -394,17 +394,7 @@ void handleRedBlack(Node newNode)
 				}
 			}
 
-			//an attempt at reconnecting the newRoot to the greatGrandParent
-			//it doesn't seem to work properly
-			Node greatGrandParent = newRoot.parent;
-			if (greatGrandParent == null) {
-				root = newRoot;
-			} else if (greatGrandParent.left == grandParent) {
-				greatGrandParent.left = newRoot;
-			} else {
-				greatGrandParent.right = newRoot;
-			}
-			return;
+			
 		}
 	}
 	//debug info if neither case applies (maybe unneccesary?)
