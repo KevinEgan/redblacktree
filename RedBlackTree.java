@@ -166,9 +166,9 @@ public class RedBlackTree<T extends Comparable<T>> {
 	private int recCountNodes(Node subTreeRoot)
 	{
 		if (subTreeRoot == null) return 0;
-		
-		//Look at the pre-order. "Count this node and THEN count the left and right 
-		//subtrees recursively
+
+		/*Look at the pre-order. "Count this node and THEN count the left and right
+		  subtrees recursively */
 		return 1 + recCountNodes(subTreeRoot.left) + recCountNodes(subTreeRoot.right);
 	}
 
@@ -196,113 +196,110 @@ public class RedBlackTree<T extends Comparable<T>> {
 
 	public T find(T searchVal)
 	{
-		//start at tge root and recurse
-		return recFind(root, searchVal);
+		//start at the root and recurse
+		return recursiveFind(root, searchVal);
 	}
 
-	//recursive find method
-	//subtree root is the root of the subtree being searched
-	//searchVal is the value being searched for
-	private T recFind(Node subTreeRoot, T searchVal){
-		//null node means value not found
-		if (subTreeRoot == null) return null;
+	/* This is a recursive find method.
+	 * subTreeRoot is the root of the subtree being searched
+	 * searchVal is the value being searched for */
+	private T recursiveFind(Node subTreeRoot, T searchVal){
 
-		//if the search value is less than the current node value, go left
+		if (subTreeRoot == null) return null; //value not found
+
+		//If the search value is less than the current node value, go to the left child
 		if (searchVal.compareTo(subTreeRoot.value) < 0){
-			return recFind(subTreeRoot.left, searchVal);
+			return recursiveFind(subTreeRoot.left, searchVal);
 		}
-		//if the search value is greater than the current node value, go right
+		//If the search value is greater than the current node value, go to the right child
 		else if (searchVal.compareTo(subTreeRoot.value) > 0){
-			return recFind(subTreeRoot.right, searchVal);
+			return recursiveFind(subTreeRoot.right, searchVal);
 		}
-		//value found
+		//The correct value is found
 		else{
 			return subTreeRoot.value;
 		}
 	}
 
-	//performs a left rotation on a subtree with a root of 'subRoot'. This fixes violations
+	// This method performs a left rotation on a subtree with a root of 'subRoot'. This fixes violations.
 	public Node rotateSubTreeLeft(Node subRoot){
 
-		//1. Identify the nodes that need to change positions
-		//the right child of the subRoot becomes the new root of the subtree
+		/* 1. Identify the nodes that need to change positions.
+		* the right child of the subRoot becomes the new root of the subtree
+		* the left child of the newRoot will become the right child of the subRoot */
 		Node newRoot = subRoot.right;
-		//the left child of the newRoot will become the right child of the subRoot
-		Node newChildOfOldRoot = newRoot.left;
+		Node orphanedChild = newRoot.left;
 
-		//2. Rotation of nodes
+		/* 2. Rotation of nodes */
 		newRoot.left = subRoot;
-		subRoot.right = newChildOfOldRoot;
+		subRoot.right = orphanedChild;
 
-		//3. Update parent pointers
-		//newRoot's parent  now becomes the subRoot's parent
+		/* 3. Update parent pointers
+		 * NewRoot's parent now becomes the subRoot's parent
+		 * SubRoot's parent is now newRoot
+		 * If the subRoot was the root, update the global root
+		 * If the new child is not null, update its parent to be the subRoot */
 		newRoot.parent = subRoot.parent;
-		//subRoot's parent is now newRoot
 		subRoot.parent = newRoot;
-		//if the new child is not null, update its parent to be the subRoot
-		if (newChildOfOldRoot != null){
-			newChildOfOldRoot.parent = subRoot;
+		if (orphanedChild != null){
+			orphanedChild.parent = subRoot;
 		}
 
-		//4.Update global root if necessary or reconnect to the parent
-		if (newRoot.parent == null){
-			//this is when the subRoot was the global root
+		/* 4. Update global root if necessary or reconnect to the parent */
+		if (newRoot.parent == null){ //If subroot is also the global root
 			root = newRoot;
 		}
-		else if (newRoot.parent.left == subRoot){
-			//this means subRoot was a left child
-				newRoot.parent.left = newRoot;
-			}
-		else{
-			//this means subRoot was a right child
-				newRoot.parent.right = newRoot;
-			}
-		
-		//return the new subtree root
-		return newRoot;
-	}
-
-	//performs a right rotation on a subtree with a root of 'subRoot'. This fixes violations
-	public Node rotateSubTreeRight(Node subRoot){
-		//1. Identify the nodes that need to change positions
-		//the left child of the subRoot becomes the new root of the subtree
-		Node newRoot = subRoot.left;
-		//the right child of the newRoot will become the left child of the subRoot
-		Node newChildOfOldRoot = newRoot.right;
-
-		//2. Rotation of nodes
-		newRoot.right = subRoot;
-		subRoot.left = newChildOfOldRoot;
-
-		//3. Update parent pointers
-		//newRoot's parent  now becomes the subRoot's parent
-		newRoot.parent = subRoot.parent;
-		//subRoot's parent is now newRoot
-		subRoot.parent = newRoot;
-		//if the new child is not null, update its parent to be the subRoot
-		if(newChildOfOldRoot != null){
-			newChildOfOldRoot.parent = subRoot;
-		}
-
-		//4. Update global root if necessary or reconnect to the parent
-		if (newRoot.parent == null){
-			//this is when the subRoot was the global root
-			root = newRoot;
-		}
-		else if (newRoot.parent.left == subRoot){
-			//this means subRoot was a left child
+		else if (newRoot.parent.left == subRoot){ // If subRoot was a left child
 			newRoot.parent.left = newRoot;
 		}
-		else{
+		else{ // If subRoot was a right child
+				newRoot.parent.right = newRoot;
+			}
 
-			//this means subRoot was a right child
-			newRoot.parent.right = newRoot;
-		}
-		//return the new subtree root
+		/* 5. Return the new subtree root */
 		return newRoot;
 	}
 
-	//these methods rotate the entire tree left or right at the root and update the global root
+	// This method performs a right rotation on a subtree with a root of 'subRoot'. This fixes violations
+	public Node rotateSubTreeRight(Node subRoot){
+
+		/* 1. Identify the nodes that need to change positions
+		* The left child of the subRoot becomes the new root of the subtree
+		* The right child of the newRoot will become the left child of the subRoot
+		*/
+		Node newRoot = subRoot.left;
+		Node orphanedChild = newRoot.right;
+
+		/* 2. Rotation of nodes */
+		newRoot.right = subRoot;
+		subRoot.left = orphanedChild;
+
+		/* 3. Update parent pointers
+		* newRoot's parent now becomes the subRoot's parent
+		* subRoot's parent is now newRoot
+		* If the new child is not null, update its parent to be the subRoot
+		*/
+		newRoot.parent = subRoot.parent;
+		subRoot.parent = newRoot;
+		if(orphanedChild != null){
+			orphanedChild.parent = subRoot;
+		}
+
+		/* 4. Update global root if necessary or reconnect to the parent */
+		if (newRoot.parent == null){ //If subRoot is also the global root
+			root = newRoot;
+		}
+		else if (newRoot.parent.left == subRoot){ // If subRoot was a left child
+			newRoot.parent.left = newRoot;
+		}
+		else{ // If subRoot was a right child
+			newRoot.parent.right = newRoot;
+		}
+		/* 5. Return the new subtree root */
+		return newRoot;
+	}
+
+	// These methods rotate the entire tree left or right at the root and update the global root
 	public void rotateTreeLeft(){
 		root = rotateSubTreeLeft(root);
 	}
@@ -362,10 +359,10 @@ void handleRedBlack(Node newNode)
 		//Check if uncle is Black (four subcases to handle)
 		//http://www.geeksforgeeks.org/red-black-tree-set-2-insert/
 		
-		//if uncle is black (or null)
+		//If uncle is black (or null)
 		else if((uncle == null) || !uncle.nodeColourRed)
 		{
-			//if the parent is the left child of the grandparent
+			// If the parent is the left child of the grandparent
 			if (grandParent.left == parent){
 				//Left Right case
 				if (parent.right == newNode){
@@ -378,7 +375,7 @@ void handleRedBlack(Node newNode)
 					applyLeftLeftCase(grandParent);
 				}
 			}
-			//if the parent if the right child of the grandparent
+			// If the parent is the right child of the grandparent
 			else {
 				//Right Left case
 				if (parent.left == newNode){
@@ -394,20 +391,19 @@ void handleRedBlack(Node newNode)
 
 		}
 	}
-	//debug info if neither case applies (maybe unneccesary?)
+	// Debug info if neither case applies (maybe unneccesary?)
 	else
 	{
 		System.out.println("No Red-Black violation detected");
 	}
 }
-	
-	//handles the Left Left case violation.
-	public Node applyLeftLeftCase(Node grandparent){
 
-		//rotate right around the grandparent (the root of the subtree)
+	/* Handles the Left Left case violation.
+	 * 1. Rotate right around the grandparent (the root of the subtree)
+	 * 2. Recolour nodes after rotation. The new root becomes black and the old root becomes red
+	 */
+	public Node applyLeftLeftCase(Node grandparent){
 		Node newRoot = rotateSubTreeRight(grandparent);
-		
-		//recolour nodes after rotation. The new root becomes black and the old root becomes red
 		newRoot.nodeColourRed = false;
 		if (newRoot.right != null){
 			newRoot.right.nodeColourRed = true;
@@ -415,12 +411,12 @@ void handleRedBlack(Node newNode)
 		return newRoot;
 	}
 
-	//handles Right Right case violation.
+	/* Handles Right Right case violation. 
+	 * 1. Rotate left around the grandparent (the root of the subtree)
+	 * 2. Recolour nodes after rotation. The new root becomes black and the old root becomes red
+	*/
 	public Node applyRightRightCase(Node grandparent){
-		//rotate left around the grandparent (the root of the subtree)
 		Node newRoot = rotateSubTreeLeft(grandparent);
-
-		//recolour nodes after rotation. The new root becomes black and the old root becomes red
 		newRoot.nodeColourRed = false;
 		if (newRoot.left != null){
 			newRoot.left.nodeColourRed = true;
@@ -428,19 +424,21 @@ void handleRedBlack(Node newNode)
 		return newRoot;
 	}
 
-	//handle Left Right case violation
+	/* Handles Left Right case violation.
+	 * 1. Rotate left around the parent which converts it to a Left Left case
+	 * 2. Finally handle the Left Left case
+	 */
 	public Node applyLeftRightCase(Node grandparent, Node parent){
-		//first rotate left around the parent which converts it to a Left Left case
 		rotateSubTreeLeft(parent);
-		//finally handle the Left Left case
 		return applyLeftLeftCase(grandparent);
 	}
 
-	//handle Right Left case violation
+	/* Handles Right Left case violation.
+	 * 1. Rotate right around the parent which converts it to a Right Right case
+	 * 2. Finally handle the Right Right case
+	 */
 	public Node applyRightLeftCase(Node grandparent, Node parent){
-		//first rotate right around the parent which converts it to a Right Right case
 		rotateSubTreeRight(parent);
-		//finally handle the Right Right case
 		return applyRightRightCase(grandparent);
 	}
 
